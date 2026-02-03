@@ -22,7 +22,7 @@ import type { DatasetType } from "@/types";
 
 export default function CataloguePage() {
   const { logout } = useAuth();
-  const { dataset, data, isLoading: dataLoading, error, switchDataset } = useDataset();
+  const { dataset, data, isLoading: dataLoading, error, switchDataset, resetFilters } = useDataset();
   const {
     searchTerm,
     selectedCategory,
@@ -34,7 +34,7 @@ export default function CataloguePage() {
     handleSearch,
     handleCategorySelect,
     handlePageChange,
-  } = useFilteredData(data?.frequent, data?.categories, ITEMS_PER_PAGE);
+  } = useFilteredData(data?.frequent, data?.categories, ITEMS_PER_PAGE, resetFilters);
 
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE + 1;
   const endIndex = Math.min(currentPage * ITEMS_PER_PAGE, totalFilteredItems);
@@ -48,7 +48,7 @@ export default function CataloguePage() {
     }
 
     pages.push(1);
-    
+
     if (currentPage > 3) {
       pages.push("ellipsis");
     }

@@ -35,6 +35,7 @@ export function useDataset(initialDataset: DatasetType = "IND") {
     const [data, setData] = useState<Dataset | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [resetFilters, setResetFilters] = useState(0);
 
     const loadDataset = useCallback(async (type: DatasetType) => {
         setIsLoading(true);
@@ -48,6 +49,7 @@ export function useDataset(initialDataset: DatasetType = "IND") {
             const jsonData = await response.json();
             setData(jsonData);
             setDataset(type);
+            setResetFilters(prev => prev + 1);
         } catch (err) {
             setError(err instanceof Error ? err.message : "Unknown error");
             console.error("Error loading dataset:", err);
@@ -69,18 +71,28 @@ export function useDataset(initialDataset: DatasetType = "IND") {
         [dataset, loadDataset]
     );
 
-    return { dataset, data, isLoading, error, switchDataset };
+    return { dataset, data, isLoading, error, resetFilters, switchDataset };
 }
 
 export function useFilteredData(
     items: DataItem[] | undefined,
     categories: any,
-    itemsPerPage: number = 10
+    itemsPerPage: number = 10,
+    resetFilters?: number
 ) {
     const [searchTerm, setSearchTerm] = useState("");
     const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
     const [selectedCategoryPath, setSelectedCategoryPath] = useState<string | null>(null);
     const [currentPage, setCurrentPage] = useState(1);
+
+    useEffect(() => {
+        if (resetFilters !== undefined && resetFilters > 0) {
+            setSearchTerm("");
+            setSelectedCategory(null);
+            setSelectedCategoryPath(null);
+            setCurrentPage(1);
+        }
+    }, [resetFilters]);
 
     const filteredItems = useMemo(() => {
         if (!items) return [];
@@ -111,10 +123,6 @@ export function useFilteredData(
 
     const handlePageChange = useCallback((page: number) => {
         setCurrentPage(page);
-        const mainContent = document.querySelector('main');
-        if (mainContent) {
-            mainContent.scrollTo({ top: 0, behavior: 'smooth' });
-        }
     }, []);
 
     return {
