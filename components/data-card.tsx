@@ -1,9 +1,8 @@
-import { memo } from "react";
 import { Card } from "@/components/ui/card";
 import {DataCardProps} from "@/types";
 
 
-export const DataCard = memo(function DataCard({ item }: DataCardProps) {
+export function DataCard({ item }: DataCardProps) {
     const {title, cat, subCat, subset, freq, src, unit, id} = item
     return (
         <Card className="p-4 transition-all hover:shadow-lg">
@@ -43,4 +42,4 @@ export const DataCard = memo(function DataCard({ item }: DataCardProps) {
             </div>
         </Card>
     );
-});
+}
